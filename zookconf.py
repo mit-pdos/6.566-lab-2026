@@ -138,7 +138,7 @@ class Container():
             time.sleep(1)
 
         # LXC brings up the container's network interface on its own
-        for svc in ['systemd-resolved', 'networkd-dispatcher', 'systemd-networkd']:
+        for svc in ['systemd-resolved', 'networkd-dispatcher', 'systemd-networkd', 'systemd-udevd', 'cron', 'rsyslog']:
             for op in ['disable', 'mask', 'stop']:
                 self.run_cmd(["systemctl", op, svc])
 
@@ -151,6 +151,13 @@ class Container():
         if not self.c.start():
             self.errormsg("Failed to start")
             sys.exit(1)
+
+        # wait for systemd to boot up, again
+        while True:
+            r = self.run_cmd(["bash", "-c", "systemctl is-system-running 2>/dev/null | egrep -q '(degraded|running)'"])
+            if r == 0:
+                break
+            time.sleep(1)
 
         pkgs = ["python3", "python3-pip", "python3-lxc",
                 "python3-flask-sqlalchemy", "python3-cryptography",

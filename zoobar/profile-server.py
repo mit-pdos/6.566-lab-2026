@@ -68,10 +68,6 @@ class ProfileServer(rpcsrv.RpcServer):
         ## This function needs to run the Python profile code in pcode
         ## and return the output from that execution.
 
-        ## The Python interpreter expects to be able to access files
-        ## from wasm_python_dir as "/" when it runs.
-        wasm_python_dir = '/usr/local/share/Python-3.11.0-wasm32-wasi-16'
-
         ## We create a per-user state directory for files written by
         ## that user's profile.  To ensure we correctly handle usernames
         ## with arbitrary characters (such as slash, dot, etc), we just
@@ -112,14 +108,6 @@ class ProfileServer(rpcsrv.RpcServer):
             ## state in the /data directory.  You will need to arrange for this
             ## to work.
 
-            ## For exercise 11, you will need to ensure that the executable
-            ## profile code cannot tamper with the Python library code.  One plan
-            ## could be to create a separate copy so that it doesn't matter if
-            ## it's corrupted.  Another plan could be to set the Unix user ID of
-            ## this process to something other than root (e.g., 566) using
-            ## os.setuid; since the library files in wasm_python_dir are owned by
-            ## root, the wasmtime runtime won't be able to modify them then.
-
             ## Finally, for exercise 11, you will need to deal with profile code
             ## that doesn't terminate.  The wasmtime runtime allows interrupting
             ## a running module by calling engine.increment_epoch().
@@ -138,7 +126,7 @@ class ProfileServer(rpcsrv.RpcServer):
             wasi = wasmtime.WasiConfig()
             wasi.inherit_stderr()
             wasi.argv = ['python.wasm', ]
-            wasi.preopen_dir(wasm_python_dir, '/')
+            # wasi.preopen_dir(some_host_dir, '/some/path/in/module')
 
             store = wasmtime.Store(engine)
             store.set_wasi(wasi)
