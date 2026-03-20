@@ -1,0 +1,5 @@
+cryptography
+requests
+authlib
+inotify_simple
+flask

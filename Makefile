@@ -131,3 +131,11 @@ export-check: export
 	for D in export/*; do make -C $$D; done
 	( cd export/lab1 && ./check-zoobar.py )
 .PHONY: export-check
+
+## Install python package needed for https-proxy.py.
+## Can be removed after 2026, when VM has it pre-installed.
+all: install-inotify-simple
+
+install-inotify-simple:
+	pip3 install --break-system-packages inotify_simple
+.PHONY: install-inotify-simple
