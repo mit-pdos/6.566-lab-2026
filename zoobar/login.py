@@ -48,6 +48,11 @@ class User(object):
         self.zoobars = bank.balance(username)
 
 def logged_in() -> bool:
+    ## This extra check helps symbolic execution discover more execution
+    ## paths, without having to override dict get() operations.
+    if "PyZoobarLogin" not in request.cookies:
+        return False
+
     g.user = User()
     g.user.checkCookie(request.cookies.get("PyZoobarLogin"))
     if g.user.person:
